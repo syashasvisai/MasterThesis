@@ -1,0 +1,16 @@
+\subsection{Swing-up Control}
+\label{sec: swingup}
+The swing-up control problem for the ADIP is to swing the system (the arm and the pendulum) up from its stable equilibrium at $\phi_1 = \phi_2 = \pi$ rad., and balance it about its unstable equilibrium at $\phi_1 = \phi_2 = 0$. This is achieved by swinging up the system from its stable equilibrium position through a `swing-up' controller and bringing it into a \textit{basin of attraction} in the up-up configuration where the swing-up controller is switched to a locally convergent stabilizing controller, usually an LQR, that will balance the system about its up-up position. Swing-up control for inverted pendulum systems, in general, has been traditionally achieved through feedback linearization techniques \cite{Spong}, or energy-based control \cite{Cazzolato}. Though the feedback linearization technique has almost always worked perfectly well in solving the swing-up control problem, it does not come with any stability analysis or performance guarantees.\par
+Fantoni et al. \cite{Fantoni} solve this issue by presenting a control strategy based on energy approach and passivity properties of the pendubot system (which is the same as ADIP). This control strategy ensures that the state is brought either arbitrarily close to the up-up position or to a homoclinic orbit that will eventually enter the basin of attraction of any locally convergent controller. Stability analysis for the same is presented based on LaSalle's theorem. The main result of the work by the authors is presented as a theorem in \cite{Fantoni}. The swing-up control law is given as:
+\begin{equation}
+    u = \frac{-k_DF-t_M(\dot{\phi_1}+k_P{\phi_1})}{t_Mk_E\tilde{E} + k_D\theta_2} \;,
+\end{equation}
+with 
+\begin{align*}
+F &= \theta_2\theta_3\sin{(\phi_1-\phi_2)}\dot{\phi}_2^2 + \theta_3^2\cos{(\phi_1 - \phi_2)}\sin{(\phi_1 - \phi_2)}\dot{\phi_1}^2\\
+&+ \theta_2\theta_4g\sin{\phi_1} + \theta_3\theta_5g\sin{(\phi_1 - 2\phi_2)} + C_{arm}\theta_2\dot{\phi_1} + C_{pend}\theta_3\cos{(\phi_1-\phi_2)}\dot{\phi_2}\;, \\
+t_M &= (\theta_1\theta_2 - \theta_3^2\cos^2{(\phi_1-\phi_2})) \;,\\
+\tilde{E} &= E - E_{top}
+\end{align*}
+where $k_E,k_D, \textup{and}~ k_P$ are strictly positive constants and $\tilde{E}$ is the difference in the actual total energy of the system and total energy at the up-up position. The $\theta_i,~i = \{1,2,\dots,5\}$ are given in Chapter \ref{Chapter:Plant}.\\
+Furthermore, Xin et al.~\cite{XIN} propose a sufficient condition for the parameters: $k_E,k_D, \textup{and}~ k_P$ in the control law such that the total energy of the Pendubot will converge to the potential energy of its top upright position. The initial parameters were obtained through the method proposed by the authors and thereafter, a GA was used to fine tune the parameters.\pagebreak

@@ -1,0 +1,37 @@
+\subsection{Genetic Algorithm}
+\label{sec:GA}
+Genetic algorithm (GA) is a search heuristic to find globally optimizing solutions for both constrained and unconstrained optimization problems inspired by Darwin's theory of natural evolution. This algorithm reflects the process of natural selection where the fittest individuals are the most probable to be selected to reproduce offspring of the next generation. Thus, the population evolves toward an optimum solution over successive generations. In this thesis work, this notion of natural selection is applied to find optimal tuning parameters for controllers. This is particularly advantageous for tuning controllers applied to data-driven models as it enables quick and reliable solutions to the optimizing problems for controlling data-driven models. The concept and the application of GA are vast, and this section provides only the basic knowledge required to execute a GA in Matlab. Importantly, there are five phases considered in a genetic algorithm.
+\begin{enumerate}
+    \item \textbf{Initial Population: } The process of natural selection starts with a set of \textit{individuals} called \textit{population}, where each individual is a solution to the problem one wants to solve. An individual is characterized by a set of variables known as \textit{genes}. To understand this better, consider for example, the problem of finding optimal tuning parameters $\mathbf{Q} \in \mathbb{R}^{n \times n}$ and $\mathbf{R} \in \mathbb{R}^{m\times m}$ for a linear quadratic regulator problem:
+    \begin{equation*}
+        \mathbf{Q} = \begin{bmatrix} 
+        q_{1,1} & q_{1,2} & \dots & q_{1,n}\\
+        q_{2,1} & q_{2,2} & \dots & q_{2,n}\\
+        \rowsvdots & \rowsvdots & &\rowsvdots\\
+        q_{n,1} & q_{n,2} & \dots & q_{n,n}
+        \end{bmatrix} \quad \quad \textup{and}  \quad \quad 
+        \mathbf{R} = diag(r_1,r_2,\dots, r_m) \;.
+    \end{equation*} 
+    Here, the entries of the matrix $\mathbf{Q}$ and $\mathbf{R}$ are the variables (the genes) and the set of variables $[q_{1,1},\dots,{q}_{n,n}, r_1,...r_m ]$ is a solution (an individual), and a collection of such sets of individuals forms a population. Care must be taken in choosing the initial population as the `evolution' naturally depends on it. 
+    \item \textbf{Fitness Function: } The fitness function or simply, the cost function determines the ability of an individual to compete with other individuals, i.e. it decides how to fit an individual through a \textit{fitness score}. The individuals with the highest fitness scores have a high probability to be selected for reproduction. The fitness function can be anything subject to the requirement. For example, it can evaluate performance measures such as rise time, settling time, overshoot, tracking error, etc. 
+    \item \textbf{Selection: } The idea of selection phase is to select the fittest individuals and pass their genes to the next generation.
+    \item \textbf{Crossover: } Crossover is the most significant phase in a GA. In this phase, a randomly chosen number of genes specified by the crossover point is exchanged between the parents (fittest individuals) to create offspring. The new offspring are then added to the population.
+    \item \textbf{Mutation: } In certain new offspring, some of the genes can be subjected to mutation with a low random probability. Mutation ensures diversity within the population and prevents premature convergence.
+    \item \textbf{Termination: } Finally, the algorithm terminates if the population has converged (does not produce offspring which are significantly different from the previous generation) or if the number of specified generations is reached. The GA provides a set of solutions to the problem when this happens.
+\end{enumerate}
+The crossover and mutation options used in this thesis, \textit{crossoverscattered} and \textit{mutationgaussian}, respectively, were the GA's default options toolbox. Likewise, the crossover fraction is also unchanged from the default value of 0.8. More information on the options can be found on the Matlab help page for the toolbox. Furthermore, a fitness limit of 0.02 was specified after some initial trials and observations. This is subjective to the fitness function and objective at hand. A few general guidelines when creating a genetic algorithm can help in the successful implementation of the same. They are enlisted as follows:
+\begin{itemize}
+    \item Population size: Generally, the population size depends on the number of genes. Longer genes would mean a larger population size as the solution space has a higher dimension. 
+    \item Number of generations: The maximum number of generations should be chosen such that the algorithm ideally terminates when the specified fitness value is reached.
+\end{itemize}
+However, the above-presented guidelines are not hard and fast rules; they only serve as a guide to initiate a GA. Consequently, in this thesis work, six genes are defined for LQi tuning. Five represent the states (original state of the system + integrated error of arm angle, $\phi_1$) and the remaining gene represents the penalty on input. Similarly, the MPC problem has five genes. As an initial guess, population size and a generation size of 10 each produced reasonably good results. The computation, however, stopped as the number of generations were reached and not because the fitness value was achieved.\par
+The next important task is formulating the fitness function. Again, this is subjective to the requirements of the designer. The fitness function returns a scalar fitness value used to select the `elite' genes. One can specify various performance objectives to calculate this cost, for example, rise time, settling time, peak overshoot etc. . In this thesis work, however, the requirement was to track a reference trajectory as closely as possible and therefore, the fitness function consisted of a simple quadratic error of the states and the reference, 
+\begin{equation}
+    J = \sum_k (\mathbf{x}_k - \mathbf{r}_k)^2 \;,
+\end{equation}
+where $k$ is the discrete-time index, and $r_k$ is the desired reference trajectory. Since the tracking of arm angle $\phi_1$ while maintaining the pendulum in the upright position is the goal of this thesis, one can further simplify the computation of the above-specified cost function by just considering the quadratic error of the states ($\phi_1$ and $\Dot{\phi_1}$). Furthermore, in this thesis, the quadratic errors of the two states were weighted as follows:
+\begin{equation}
+J = \sum_k (\mathbf{x}_k - \mathbf{r}_{x_k})^2 +(\mathbf{\Dot{x}}_k - \beta\mathbf{r}_{\Dot{x}_k})^2 \;, \quad \quad \beta = 0.1 \;.
+\end{equation}
+The value of $\beta$ can be varied as per the requirement of the user. In this thesis, it was required to track $\phi_1$ with reasonably good rise and settling times, and therefore it was intuitively chosen as $\beta = 0.1$.
+\newpage

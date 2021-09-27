@@ -1,0 +1,150 @@
+\subsection{Koopman Operator Framework}
+\label{sec:KO}
+Koopman operator theory \cite{Koopman1931} proposed by B.O.Koopman in 1931, has recently emerged as a promising framework to embed nonlinear dynamics in a global linear representation. The spectral decomposition of this linear Koopman operator completely characterizes the behaviour of a nonlinear system analogous to Eq.~\ref{eq:Lin} \cite{spectral_NL} thus enabling the use of a wealth of linear control techniques to control a dynamical system.\\
+The Koopman operator is formally defined as follows:
+% 
+\begin{definition}
+Consider a continuous-time dynamical system
+% 
+\begin{equation}
+\label{eq:dynsys_cont}
+\frac{d\mathbf{x}}{dt} = \mathbf{f(x)} \;,
+\end{equation}
+% 
+where $\mathbf{x} \in \mathcal{M}$ is a state on a smooth n-dimensional manifold $\mathcal{M}$ and $\mathcal{M}\subseteq \mathbb{R}^n$. The Koopman operator $\mathcal{K}$ is an infinite dimensional linear operator that acts on functions of state space, $\textsl{g} \in \mathcal{F}$, with $\textsl{g} : \mathcal{M}\rightarrow\mathbb{C}$ so that
+% 
+\begin{equation}
+    \label{eq: Koopman_main}
+    \mathcal{K}\textsl{g}(\mathbf{x}) = \textsl{g}(\mathbf{f(x)})\;.
+\end{equation}
+\end{definition}
+% 
+The definition (\ref{eq: Koopman_main}) can alternatively be represented by a composition of the observables with the nonlinear evolution: $ \mathcal{K}\textsl{g} = \textsl{g}\circ \mathbf{f}$.\\
+It is assumed that, $\mathcal{F} = {L}^2(\mathcal{M,\rho})$, where $\rho$ is a positive, single valued analytic function defined on $\mathcal{M}$, but not necessarily an invariant measure of the underlying dynamical system. This assumption made before in the literature by Koopman \cite{Koopman1931} and Budisic et al. \cite{Applied_Koopmanism}, is required so that the inner products can be taken in $\mathcal{F}$. 
+The Koopman operator is also defined for discrete-time dynamical systems. The dynamical system (\ref{eq:dynsys_cont}) will induce a discrete-time dynamical system $(\mathcal{M},k,\mathbf{F})$ where $k \in \mathbb{Z}$ is an integer index and the flow map $\mathbf{F} : \mathcal{M} \rightarrow \mathcal{M}$, where $\mathbf{F}$ is the evolution operator that maps the state $\mathbf{x}(t_0)$ to a future time state $\mathbf{x}(t_0+t)$:
+% 
+\begin{equation}
+    \mathbf{F}(\mathbf{x}(t_0)) = \mathbf{x}(t_0+t) = \mathbf{x}(t_0) + \int_{t_0}^{{t_0} + t} {\textbf{f}(\mathbf{x}(\tau))}\,d\tau \;.
+\end{equation}
+% 
+This induces the discrete-time dynamical system
+% 
+\begin{equation}
+\label{eq:disc_dynamicalSystem}
+    \mathbf{x}_{k+1} = \mathbf{F}(\mathbf{x}_k) \;,
+\end{equation}
+% 
+where $\mathbf{x}_k = \mathbf{x}(kt)$. The analogous discrete-time Koopman operator is then given by $\mathcal{K}$ such that
+% 
+\begin{equation}
+\label{eq:disc_KO}
+    \textsl{g}(\mathbf{x}_{k+1})  = \textsl{g}(\mathbf{F}(\mathbf{x}_k)) = \mathcal{K}\textsl{g}(\mathbf{x}_k) \;.
+\end{equation}
+%
+As can be seen from the above equations, the Koopman operator maps functions of state space to functions of state space and not states to states. In other words, the Koopman operator defines a new dynamical system, $(\mathcal{F},k,\mathcal{K})$, that evolves the observables $\textsl{g} \in \mathcal{F}$ in discrete-time. 
+\par
+The idea of the Koopman operator theory is to analyse the flow dynamics governed by (\ref{eq:disc_dynamicalSystem}) or its continuous-time equivalent (\ref{eq:dynsys_cont}), only from available data - collected either numerically or experimentally using the eigenfunctions and eigenvalies of $\mathcal{K}$. To this end, let $\varphi_j : \mathcal{M} \rightarrow \mathbb{R}$ denote eigenfunctions and $\lambda_j \in \mathbb{C}$ denote eigenvalues of the Koopman operator,
+% 
+\begin{equation}
+\label{eq:spec_KO}
+    \mathcal{K}\varphi_j = \lambda_j\varphi_j \;, \quad \quad j = 1,2,\dots,\infty
+\end{equation}
+% 
+
+\par
+The dynamical system defined by $\mathbf{F}$ in (\ref{eq:disc_dynamicalSystem}), and the one defined by $\mathcal{K}$ in (\ref{eq:disc_KO}), represent a system with the same fundamental behavior. The link between the two representations is the \textit{full state observable}, $\textsl{\textbf{g}}(\mathbf{x}) = \mathbf{x}$ and the \textit{Koopman mode decomposition}~\cite{rowley_mezic}, $\{(\lambda_j,\varphi_j,\boldsymbol{v}_j)\}_{j=1}^K$, the set of $K$ tuples of Koopman eigenvalues, eigenfunctions and modes required to reconstruct the full state. $K$ could (and often will) be infinite. Although $\textsl{\textbf{g}}$ is a vector valued observable, each component of it is a scalar valued observable, i.e., $\textsl{g}_i\in \mathcal{F}$ where $\textsl{g}_i$ is the $i$-th component of $\textsl{\textbf{g}}$. Assuming $\textsl{g}$ is in the span of the set of $K$ eigenfunctions, it can be expanded \cite{spectral_NL} as
+% 
+\begin{equation*}
+    \textsl{g}_i(\mathbf{x}) = \sum_{j=1}^K v_{ij}\varphi_j(\mathbf{x}) , \quad \quad  v_{jk} \in \mathbb{C}.
+\end{equation*}
+% 
+Then $\textsl{\textbf{g}}$ can be obtained by ``stacking'' these weights into vectors i.e., $\boldsymbol{v}_j = [v_{1j},v_{2j},\dots,v_{nj}]^\top$. As a result, the full-state observable $\textsl{\textbf{g}}(\mathbf{x}) = \mathbf{x}$ can be written as 
+% 
+\begin{equation}
+\label{eq:obsv_KO}
+  \mathbf{x} = \textsl{\textbf{g}}(\mathbf{x}) = \begin{bmatrix}
+    \textsl{g}_1(\mathbf{x})\\\textsl{g}_2(\mathbf{x})\\ \vdots \\ \textsl{g}_n(\mathbf{x})
+    \end{bmatrix} = \sum_{j=1}^K \boldsymbol{v}_j \varphi_j(\mathbf{x})\;,
+\end{equation}
+% 
+where $\boldsymbol{v_j}$ is the $j$th Koopman mode associated with the $j$th Koopman eigenfunction $\varphi_j$. In summary, Koopman modes are the weights needed to expres the full state in the Koopman eigenfunction basis.\\
+Given the decomposition in Eq.~\ref{eq:obsv_KO}, the system state at future times can be obtained either by directly evolving $\mathbf{x}$ as in (\ref{eq:disc_KO}) or by evolving the full state observable through Koopman:
+% 
+\begin{equation}
+\label{eq:KO_soln}
+    \mathbf{F(x)} = \mathcal{K}\textsl{g}(\mathbf{x}) = \mathcal{K}\sum_{j=1}^K \varphi_j(\mathbf{x})\boldsymbol{v}_j = \sum_{j=1}^K \mathcal{K}\varphi_j(\mathbf{x})\boldsymbol{v}_j = \sum_{j=1}^K\lambda_j\varphi_j(\mathbf{x})\boldsymbol{v}_j 
+\end{equation}
+% 
+% This sequence of triples, $\{(\lambda_k,\varphi_k,\boldsymbol{v}_k\}_{k=0}^\infty)$ is known as the \textit{Koopman mode decomposition}, introduced by Mezic \cite{Mezic2005SpectralPO}. 
+This representation of $\mathbf{F(x)}$ is advantageous because its corresponding eigenvalue determines the dynamics associated with each eigenfunction. \\
+Furthermore, the Koopman mode decomposition can be connected to the dynamic mode decomposition algorithm introduced in the previous chapter. It is then possible to determine finite dimensional approximation of Koopman eigenvalues and modes directly from data under suitable conditions through the DMD, as shown by Rowley et al. \cite{rowley_mezic}. Importantly, the choice of \textit{observables} or the measurement functions play a crucial role in the success of the Koopman method. The DMD algorithm, as presented in the previous section, will now run on an augmented set of data matrices, which are the data matrices of the observables. This is further explored in the next sections.
+% % In summary, the Koopman mode decomposition enables one to:
+% \begin{itemize}
+%     \item transform state space so that the dynamics appear to be linear,
+%     \item determine the temporal dynamics of the linear system, and 
+%     \item reconstruct the state of the original system from the new linear representation.
+% \end{itemize}
+\newpage
+Another important concept to take note of is the Koopman invariant subspace defined in \cite{Brunton_K_invariant_sub}. 
+% Hilbert spaces are usually considered to define the space of the measurement functions, $\textsl{g(\mathbf{x})}$. A measurement function can then be written in terms of basis observable functions $y_i(x)$
+\begin{definition}
+A Koopman invariant subspace is given by span\{$\textsl{g}_1, \textsl{g}_2,\dots,\textsl{g}_p$\} if all functions \textsl{g} in this subspace,
+\begin{equation}
+    \textsl{g} = \alpha_1\textsl{g}_1 + \alpha_2\textsl{g}_2+\dots+\alpha_p\textsl{g}_p\;,
+\end{equation}
+remain in the subspace after being acted on by the Koopman operator $\mathcal{K}$:
+\begin{equation}
+    \mathcal{K}\textsl{g} = \beta_1\textsl{g}_1 + \beta_2\textsl{g}_2 + \dots + \beta_p\textsl{g}_p \;.
+\end{equation}
+\end{definition}
+Instead of capturing the evolution of all measurement functions in a Hilbert space, applied Koopman analysis approximates the evolution on a subspace spanned by a finite set of measurement functions, which is the Koopman invariant subspace. For functions in these invariant subspaces, it is possible to restrict the Koopman operator to this subspace, yielding a finite-dimensional linear operator $\mathbf{K}$. $\mathbf{K}$ acts on a vector space $\mathbb{R}^p$, with the coordinates given by the values $\textsl{g}_k(\mathbf{x})$. Any finite set of eigenfunctions of the Koopman operator will span an invariant subspace, and importantly, these eigenfunctions provide intrinsic coordinates along which the dynamics behave linearly.
+% Therefore, the data matrices $\mathbf{X}$ and $\mathbf{X^+}$ in (\ref{data1}) and (\ref{data2}) respectively, now become:
+% % 
+% \begin{align}
+%     \label{augdata1}
+%         \mathbf{Y} &= \begin{bmatrix}
+%         |                 &                & \quad & |                 \\
+%         \mathbf{g(x_{1,1})}   & \dots   & \dots & \mathbf{g(x_{N,m-1})}\\
+%         |                 &                & \quad & |                   \\
+%         \end{bmatrix} \;, \\
+%         % 
+%         % 
+%         \label{augdata2}
+%         \mathbf{Y^+} &= \begin{bmatrix}
+%         |                 &                  & \quad & |                 \\
+%         \mathbf{g(x_{1,2})}   & \dots   & \dots & \mathbf{g(x_{N,m})}\\
+%         |                 &                  & \quad & |                   \\
+%         \end{bmatrix} \;,
+%     \end{align}
+%     % 
+% where each column is given by $\mathbf{y}_k = \textsl{\textbf{g}}\mathbf{(x}_k)$ or $\mathbf{y^+}_k = \textsl{\textbf{g}}\mathbf{(x^+}_k)$.  
+% The DMD algorithm then computes
+% % 
+% \begin{equation}
+%     \mathbf{A_Y} = \mathbf{Y^+Y^{\dagger}}
+% \end{equation}
+% % 
+% along with the low-rank counterpart $\mathbf{\tilde{A}_Y}$. The eigenvalues and eigenvectors of $\mathbf{A_Y}$ may approximate Koopman eigenvalues and modes, depending on the set of observables chosen.
+% The augmented modes $\mathbf{\Phi}$ approximate the Koopman modes by, (from (\ref{dmdmodes}) in the DMD algorithm)
+% % 
+% \begin{equation}
+%     \label{Koopmanmodes}
+%         \mathbf{\Phi} = \mathbf{Y^+V\Sigma^{-1}W} \;.
+% \end{equation}
+% % 
+% where $\mathbf{W}$ comes from the eigenvalue problem $\mathbf{\tilde{A}_Y}\mathbf{W} = \mathbf{W}\mathbf{\Lambda}$ and $\mathbf{Y} = \mathbf{U\Sigma V^{\ast}}$.
+% The future state in the space of observables as given in Eq. \ref{eq:KO_soln}, is alternatively given by the linear evolution
+% % 
+% \begin{equation}
+% \label{eq:KO_soln2}
+%         \mathbf{y}(t) = \mathbf{\Phi_Y}\textup{exp}(\boldsymbol{\omega}t)\mathbf{b} \;,
+% \end{equation}
+% % 
+% where $\mathbf{b = \Phi_Y^{\dagger}y_1}$ is  determined by projecting back to the initial data observable, and $\boldsymbol{\omega}$ are the set of eigenvalues $\lambda_k$ generated from matrix $\mathbf{\Lambda}$, where $\omega_k = ln(\lambda_k)/\Delta t$.\\\\
+\par
+The key takeaway from Eq.~\ref{eq:KO_soln}, and this section in general,
+%, \ref{eq:KO_soln2}
+is that the Koopman operator captures everything about the nonlinear dynamical system (\ref{eq:dynsys_cont}), and its eigenfunctions define a nonlinear change of coordinates in which the system becomes linear. Of particular interest here is the ``slow'' subspace of the Koopman operator, which is the span of the eigenfunctions associated with the eigenvalues near the unit circle in discrete time or near the imaginary axis in the continuous-time. These eigenvalues and eigenfunctions capture the long term dynamics of observables that appear after the fast transients have subsided and could serve as a low dimensional approximation of the otherwise infinite-dimensional operator when a spectral gap, which clearly delineates the ``fast'' and ``slow'' temporal dynamics, is present \cite{WILLIAMS2016704}.
+In principle, this framework is quite broadly applicable, and useful even for problems with multiple attractors that cannot be accurately approximated using models based on local linearization.\par
+Thus, discovering Koopman eigenfunctions enables globally linear representations of nonlinear systems, but discovering these eigenfunctions is challenging and still an open problem. Several new machine learning techniques seek to identify relevant terms in dynamics from data. Two of the most popular techniques, the Extended Dynamic Mode Decomposition and the Sparse Identification of Nonlinear Dynamics~\cite{SINDy} are discussed in the following sections.
+\newpage

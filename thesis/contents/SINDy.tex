@@ -1,0 +1,102 @@
+\subsection{Sparse Identification of Nonlinear Dynamics}
+\label{sec:SINDy}
+Sparse identification of Nonlinear dynamics (SINDy) technique is another equation-free data-driven method to identify a dynamical system. SINDy re-envisions the discovery of dynamical system explored previously through EDMD from the perspective of sparse regression. Specifically,  Brunton et al. \cite{SINDy} take advantage of the fact that most physical systems have only a few relevant terms that define the dynamics, therefore, making the governing equations sparse in a high-dimensional nonlinear function space. The SINDy algorithm applied to discrete-time data \cite{Brunton_K_invariant_sub}, is briefly described as follows:
+% 
+\begin{itemize}
+    \item Collect measurements of state as in Eqs.~\ref{data1} and \ref{data2} and augment them into a larger vector $\mathbf{\Theta(x)}$, where $\mathbf{\Theta(x)}$ is a dictionary of all possible candidate terms in the right hand side dynamics $\mathbf{F}_t$ in Eq.~\ref{eq:disc_dynamicalSystem}.
+    % 
+    \begin{equation}
+    \label{eq:theta_sym}
+        \mathbf{\Theta({x})} = \begin{bmatrix}
+         \theta_1\mathbf{(x)}\\ \theta_2\mathbf{(x)} \\ \rowsvdots \\ \theta_L\mathbf{(x)}\\
+        \end{bmatrix}
+    \end{equation}
+    % 
+    $\mathbf{\Theta(x)}$ here is similar to $\mathbf{\Psi(x)}$ introduced in the previous section, except that $\mathbf{\Theta(x)}$ almost always contains a lot more candidate terms than in $\mathbf{\Psi(x)}$, $L \gg K$. \\
+    Note that representation of $\mathbf{\Theta({x})}$ and the following equations in this section are taken from \cite{Brunton_K_invariant_sub}. These are equivalent to the equations in the original SINDy algorithm in \cite{SINDy}. The equations in \cite{Brunton_K_invariant_sub} are merely the transposed version of the original.
+    \item The following matrix system of equations is then set up:
+    % 
+    \begin{equation}
+    \label{eq:SINDy1}
+        % 
+        \begin{bmatrix}
+        |                &  |               &    \quad&         |         \\
+        \mathbf{x}_{2}   &  \mathbf{x}_{3}, &   \dots & \mathbf{x}_{m} \\
+        |                &  |               &    \quad&         |       
+        \end{bmatrix} = \brows{\mathbf{\xi}_1^\top \\ \mathbf{\xi}_2^\top \\ \rowsvdots \\ \mathbf{\xi}_n^\top}
+        \begin{bmatrix}
+         |                &  |               &    \quad&         |         \\
+        \mathbf{\Theta(x}_{1})   &  \mathbf{\Theta(x}_{2}), &   \dots & \mathbf{\Theta(x}_{m-1}) \\
+        |                &  |               &    \quad&         |       
+        \end{bmatrix} \;,
+    \end{equation}
+    % 
+    Eq.~\ref{eq:SINDy1} can be written in matrix short-hand as:
+    % 
+    \begin{equation}
+    \label{Eq:SINDy2}
+        \mathbf{X^+} = \mathbf{\Xi^\top \Theta(X)} \;,
+    \end{equation}
+    % 
+    % where $\mathbf{X^+} \in \mathbb{R}^{n \times N(m-1)}$, $\mathbf{\Xi}^\top \in \mathbb{R}^{n \times K}$, and $\mathbf{\Theta(X) \in \mathbb{R}}^{K \times N(m-1)}$
+    Note that the above equation is considered only for one trajectory ($N =1$) for convenience of representation. It is however recommended that the data matrices are constructed from multiple trajectories spanning the desired state space. The data from multiple trajectories is arranged as previously shown in Eqs.~\ref{data1} and \ref{data2}.\\
+    The row vectors $\mathbf{\xi_k^\top}$ ($k = 1,2,\dots,n$) determine which nonlinear terms in $\mathbf{\Theta(x)}$ are active in the $k$-th row of $\mathbf{F}_t$. Typically, $\mathbf{\xi_k}$ will be a sparse vector, since only a few terms are active in the right hand side of many dynamical systems of interest. In this case, sparse regression is used to solve for each sparse row $\mathbf{\xi_k^\top}$. The sparse matrix $\mathbf{\Xi^\top}$ then yields a nonlinear discrete-time model for Eq.~\ref{data1}, obtained purely from data:
+    % 
+    \begin{equation}
+        \mathbf{x}_{k+1} = \mathbf{\Xi^\top}\mathbf{\Theta(x}_k) \;.
+    \end{equation}
+    % 
+    Note that $\mathbf{\Theta(x})$ is a vector of symbolic functions of elements of $\mathbf{x}$ (Eq. \ref{eq:theta_sym}), as opposed to $\mathbf{\Theta(X})$, which is a data matrix.\\
+    With the active terms in the nonlinear dynamics identified as the nonzero entries in the rows of $\mathbf{\Xi^\top}$, it is possible to include these funcitons in the Koopman subspace. $\mathbf{\Xi^\top}$ is only a mapping from the observable state-space to the original state space and is not the Koopman operator. However, if $\mathbf{\Theta(x)} = \mathbf{x}$, the problem in Eq.~\ref{Eq:SINDy2} reduces to the standard DMD problem:
+    \begin{equation}
+        \mathbf{X^+} = \mathbf{\Xi X} \;,
+    \end{equation}
+    and $\mathbf{\Xi} \in \mathbb{R}^{n \times n}$ becomes the linear operator that advances the state of the system.
+\end{itemize}
+Similar to EDMDc, the SINDy method can also be generalized to include inputs and control \cite{SINDyc}. This only requires building a larger library $\mathbf{\Theta(x,u)}$ of candidate functions that include $\mathbf{u}$ and consequently measurements of state $\mathbf{x}$ and input $\mathbf{u}$. The candidate functions can also include nonlinear cross terms in $\mathbf{x}$ and $\mathbf{u}$.\\
+If the input $\mathbf{u}$ corresponds to external forcing, the Eq.~\ref{Eq:SINDy2} can be solved for sparse coefficients $\Xi$: 
+\begin{equation}
+            \mathbf{X^+} = \mathbf{\Xi^\top \Theta(X,\Gamma)} \;.
+\end{equation}
+However, if the input $\mathbf{u}$ corresponds to a feedback control signal, where $\mathbf{u = k(x)}$, then the SINDy regression becomes ill-conditioned and it will be impossible to disambiguate the effect of feedback control $\mathbf{u}$ with internal feedback terms $\mathbf{k(x)}$ within the dynamical system. In this case, the feedback input $\mathbf{u}$ is identified as a function of the state:
+\begin{equation}
+    \mathbf{\Gamma} = \mathbf{\Xi}_u^\top \mathbf{\Theta(X)}\;.
+\end{equation}
+And the coefficients of the states are identified by perturbing the input $u$ with a sufficiently large white noise or occasionally kicking the system with a large impulse or step in $\mathbf{u}$ to distinguish the input $\mathbf{u}$ from $\mathbf{k(x)}$ terms.
+\par 
+Brunton et al. \cite{SINDyc} demonstrate the above detailed SINDy with control algorithm on the Lorenz equations with external forcing and feedback control.
+\newpage
+
+% \paragraph{Approximating Koopman Eigenfunctions from Data:}
+% In discrete time, a Koopman eigenfunction, $\varphi(\mathbf{x})$ evaluated at a number of data points in $\mathbf{X}$ will satisfy:
+% \begin{equation}
+%     \begin{bmatrix}
+%     \lambda\varphi(\mathbf{x}_1)\\ \lambda\varphi(\mathbf{x}_2) \\ \vdots \\ \lambda\varphi(\mathbf{x}_m)
+%     \end{bmatrix}
+%     = 
+%     \begin{bmatrix}
+%     \varphi(\mathbf{x}_2)\\\varphi(\mathbf{x}_3)\\ \vdots \\ \varphi(\mathbf{x}_{m+1})
+%     \end{bmatrix} \;.
+% \end{equation}
+% It is possible to approximate this eigenfunction as an expansion in terms of sets of candidate functions that may contain the original state $\mathbf{x}$ as well as nonlinear measurements, so often $p\gg n$.
+% \begin{equation}
+%     \Theta(\mathbf{x}) = [\theta_1(\mathbf{x}) \quad \theta_2(\mathbf{x}) \quad \dots \quad \theta_p(\mathbf{x})] \;.
+% \end{equation}
+% The Koopman eigenfunction can then be approximated in the above basis as:
+% \begin{equation}
+%     \varphi(\mathbf{x}) \approx \sum_{k=1}^p \theta_k(\mathbf{x})\xi_k = \Theta(\mathbf{x})\mathbf{\xi} \;.
+% \end{equation}
+
+% However, obtaining the eigenfunctions from data or analytic expressions is still an open challenge. Several ways have been proposed to obtain the Koopman eigenfunctions. For example, applying the chain rule to the time derivative of the Koopman eigenfunction $\varphi(\mathbf{x})$ yields
+% \begin{equation}
+% \label{eq:KO2}
+%      \frac{d}{dt}\varphi(\mathbf{x}) = \nabla \varphi(\mathbf{x})\cdot\Dot{\mathbf{x}} = \nabla \varphi(\mathbf{x}) \cdot \textbf{f(x)} \;.
+% \end{equation}
+% % Combining Eq. \ref{eq:KO1} with Eq. \ref{eq:KO2} results in a partial differential equation (PDE) for the Koopman eigenfunction $\varphi(\mathbf{x})$:
+% \begin{equation}
+% \label{eq:pde}
+%     \nabla \varphi(\mathbf{x})\cdot\mathbf{f(x)} = \lambda \varphi(\mathbf{x}) \;.
+% \end{equation}
+% With the nonlinear PDE \ref{eq:pde}, it is possible to approximate the Koopman eigenfunctions either by solving for the Laurent series or with data via regression. This forms the basis of motivation for using the Sparse Identification of Nonlinear Dynamics algorithm (SINDy) through which the Koopman eigenfunctions have been successfully approximated for several systems \cite{SINDy}.
+% The goal of Koopman control is to reformulate nonlinear dynamics in a linear framework to enable the use of powerful control techniques available for linear systems.
+% Sparse identification of Eigenfunctions: It is possible to leverage the SINDy regression to identify Koopman eigenfunctions corresponding to a particular eigenvalue $\lambda$, selecting the few active terms in the library $\mathbf{\Theta{x}}$ to avoid overfitting. Given the data matrices, $\mathbf{X}$ and $\mathbf{\Dot{X}}$ from above it is possible to construct the library of basis functions $\mathbf{\Theta{x}}$ as well as a library of directional derivatives, representing the possible terms in $\nabla\mathbf{\varphi(x)\cdot f(x)}$

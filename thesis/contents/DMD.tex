@@ -1,0 +1,117 @@
+\subsection{Dynamic Mode Decomposition}
+\label{sec:DMD}
+Dynamic Mode Decomposition (DMD) is a powerful data-driven modelling technique that is used for the discovery of dynamical systems, usually from high dimensional data. The method first originated in the fluid dynamics community as a method to decompose complex flows into a simple representation based on spatiotemporal coherent structures. At its core, the DMD can be thought of as an ideal combination of spatial dimensionality-reduction techniques, such as the proper orthogonal decomposition (POD), with Fourier transforms in time. This method relies simply on collecting snapshots of data $\mathbf{x}_k \in \mathbb{R}^n$ from a dynamical system at several times $t_k$, where $k = 1,2,3,\dots,M$, and regressing this data onto locally linear dynamics 
+% 
+\begin{equation}
+\label{eq:DMD1}
+    \mathbf{x}_{k+1} = \mathbf{Ax}_k \;,
+\end{equation}
+% 
+where $\mathbf{A} \in \mathbb{R}^{n\times n}$ is chosen to minimize
+% 
+\begin{equation}
+\label{eq:norm_error}
+    \norm{\mathbf{x}_{k+1} - \mathbf{Ax}_k}_2
+\end{equation}
+% 
+over the $k = 1,2,3,\dots,M$ snapshots. The DMD is simple to execute and makes almost no assumptions about the underlying system. The cost of the algorithm is a singular value decomposition (SVD) of the snapshot matrix constructed from the data $\mathbf{x}_k$. The optimality of this approximation though holds only over the sampling window where $\mathbf{A}$ is constructed. The DMD architecture is explained in brief as follows:
+\begin{itemize}
+    \item The data $\mathbf{x}_k$ is collected across $M$ snapshots and is arranged into two large data matrices $\mathbf{X}$ and $\mathbf{Y}$, where $\mathbf{Y}$ is simply the time-shifted version of $\mathbf{X}$ i.e., $\mathbf{X^+}$, in the case of discrete-time data.\\
+    It is important to note that the data can (and is in-fact recommended to) be obtained from multiple trajectories, ${N}$, to sufficiently capture the dynamics of the system in question. The data is then arranged as:
+    % 
+    \begin{align}
+    \label{data1}
+        \mathbf{X} &= \begin{bmatrix}
+        |                  & |                  & \quad & |                  & \quad     |            &   |               &       &         |         \\
+        \mathbf{x}_{1,1}   & \mathbf{x}_{1,2}   & \dots & \mathbf{x}_{1,M}, & \quad \mathbf{x}_{2,1} & \mathbf{x}_{2,2} & \dots & \mathbf{x}_{N,M}\\
+        |                  & |                  & \quad & |                  & \quad    |               & |                 &       & |                   \\
+        \end{bmatrix} \in \mathbb{R}^{n\times NM}  \;, \\
+        % 
+        % 
+        \label{data2}
+        \mathbf{Y}  &= \begin{bmatrix}
+        |                  & |                  & \quad & |                  & \quad     |            &   |               &       &         |         \\
+        \mathbf{y}_{1,1}   & \mathbf{y}_{1,2}   & \dots &  \mathbf{y}_{1,M},   & \quad  \mathbf{y}_{2,1} & \mathbf{y}_{2,1} & \dots & \mathbf{y}_{N,M} \\
+        |                  & |                  & \quad & |                  & \quad     |            &   |               &       &         |         \\
+        \end{bmatrix} \in \mathbb{R}^{n\times NM} \;.
+    \end{align}
+    % 
+    An equivalent representation also exists for continuous-time data where the time-shifted matrix is replaced by a matrix of derivatives of the corresponding state. But for this thesis work, all the data captured is discrete-time data and therefore, the formulations will be in discrete-time unless specified otherwise. \\
+    The locally linear approximation in Eq.~\ref{eq:DMD1} can then be written in terms of these data matrices as
+    % 
+    \begin{equation}
+        \mathbf{Y} \approx \mathbf{AX} \;.
+    \end{equation}
+    % 
+    The best fit matrix $\mathbf{A} \in \mathbb{R}^{n\times n}$ is then given by
+    %
+    \begin{equation}
+        \mathbf{A} = \mathbf{YX^{\dagger}}
+    \end{equation}
+    % 
+    where $^\dagger$  is the Moore-Penrose pseudoinverse. The psuedoinverse is equivalent to finding the best-fit solution in the least square sense. Thus, this solution minimizes the error
+    % 
+    \begin{equation}
+        \norm{\mathbf{Y - AX}}_F
+    \end{equation}
+    % 
+    where $\norm{.}_F$ is the Frobenius norm given by
+    % 
+    \begin{equation}
+        \norm{\mathbf{X}}_F = \sqrt{\sum_{j=1}^n\sum_{k=1}^mX_{jk}^2} \;.
+    \end{equation}
+    % 
+     Note that the best-fit linear operator $\mathbf{A}$ can be solved in the above shown way for low-dimensional data only.
+\end{itemize}
+In case, the snapshots $\mathbf{x}_k$ are high dimensional, i.\,e. when the dimension of the measurement vector or the dimension of the observables vector is huge, the resulting matrix $\mathbf{A}$ also will be high dimensional which maybe difficult to represent or decompose. Therefore, instead of solving for $\mathbf{A}$ directly, the data is first projected onto a low-rank subspace defined by POD modes and then solved for a low-dimensional evolution of $\mathbf{\Tilde{A}}$ that evolves on these POD mode coefficients. The DMD algorithm then uses this low dimensional evolution $\mathbf{\Tilde{A}}$ to reconstruct the leading nonzero eigenvalues and eigenvectors of the full-dimensional operator $\mathbf{A}$ without ever explicitly computing $\mathbf{A}$. The eigenvalues and eigenvectors of the linear operator $\mathbf{A}$ are of particular importance, and more will be discussed about their relevance in further sections. The procedure for computing them is discussed in brief as follows:
+    % 
+\begin{enumerate}
+    \item First, compute the SVD of $\mathbf{X}$:
+    % 
+    \begin{equation}
+        \mathbf{X} \approx \mathbf{U\Sigma V^{\ast}}
+    \end{equation}
+    % 
+    where $^\ast$ denotes the conjugate transpose, $\mathbf{U} \in \mathbb{C}^{n \times r}$, $\mathbf{\Sigma} \in \mathbb{C}^{r \times r}$, and $\mathbf{V} \in \mathbb{C}^{m \times r}$. Here $r$ is the rank of the reduced SVD approximation to $\mathbf{X}$. This is selected on a subjective basis. The left singular vectors $\mathbf{U}$ are POD modes.
+    \item Compute $\mathbf{\tilde{A}} \in \mathbb{R}^{r \times r}$, the projection of the full matrix $\mathbf{A}$ onto POD modes.
+    % 
+    \begin{equation}
+        \mathbf{\tilde{A}} = \mathbf{U^{\ast}YV\Sigma^{-1}} \;.
+    \end{equation}
+    % 
+    The matrix $\mathbf{\tilde{A}}$ defines a low-dimensional linear model of the dynamical system on POD coordinates:
+    % 
+    \begin{equation}
+        \mathbf{\tilde{x}}_{k+1} = \mathbf{\tilde{A}}\mathbf{\tilde{x}}_k
+    \end{equation}
+    % 
+    \item Compute the eigendecomposition of $\mathbf{\tilde{A}}$
+    \begin{equation}
+        \mathbf{\tilde{A}}\mathbf{W} = \mathbf{W}\mathbf{\Lambda}
+    \end{equation}
+    where columns of $\mathbf{W}$ are eigenvectors and $\mathbf{\Lambda}$ is a diagonal matrix of corresponding eigenvalues $\lambda_k$.
+    \item Finally, the eigendecomposition of $\mathbf{A}$ is reconstructed from $\mathbf{W}$ and $\mathbf{\Lambda}$. The eigenvalues of $\mathbf{A}$ are given by $\mathbf{\Lambda}$ and the eigenvectors of $\mathbf{A}$ are given by columns of $\mathbf{\Phi}$:
+    \begin{equation}
+    \label{dmdmodes}
+        \mathbf{\Phi} = \mathbf{YV\Sigma^{-1}W} \;.
+    \end{equation}
+The columns of $\mathbf{\Phi}$ are also known as the DMD modes. The DMD modes are spatially coherent and oscillate and/or grow or decay at the fixed frequency $\mathbf{\lambda}$.
+\end{enumerate}
+With the low-rank approximations of both the eigenvalues and eigenvectors, the projected future solution can be constructed for all time in the future.
+% First, rewriting for convenience $\omega_k = ln(\lambda_k)/\Delta t$, the approximate solution at all future times is given by
+% 
+% \begin{equation}
+% \label{eq:state_soln}
+%     \mathbf{x}(t) \approx \sum_{k=1}^r\boldsymbol{\phi}_k\textup{exp}(\omega_kt)b_k = \mathbf{\Phi}\textup{exp}(\mathbf{\Omega}t)\mathbf{b} \;,
+% \end{equation}
+% % 
+% where $b_k$ is the initial amplitude of each mode and $\mathbf{\Omega} = \textup{diag}(\omega)$ is a diagonal matrix whose entries are the continuous time eigenvalues $\omega_k$. The initial conditions vector $\mathbf{b}$ is calculated as
+% % 
+% \begin{equation}
+%     \mathbf{b} = \mathbf{\Phi^{\dagger}x}_1 \;,
+% \end{equation}
+% % 
+% where $\mathbf{x}_1$ is the initial snapshot at time $t_1 = 0$.
+Two important advantages of the DMD framework is its simple formulation in terms of well-established techniques from linear algebra, and that it is formulated entirely in terms of measurement data. For this reason, it may be applied to a broad range of applications including fluid dynamics, epidemiology, neuroscience, finance etc. \\
+The key takeaways from the DMD approach for the context of this thesis work though, are the estimation of linear matrices $\mathbf{A}$ and $\mathbf{\tilde{A}}$, the computation of DMD modes $\mathbf{\Phi}$ and the DMD eigenvalues $\mathbf{\Lambda}$. Most importantly, these can be connected to the Koopman operator theory, with the DMD method viewed as computing the eigenvalues and eigenvectors of a finite-dimensional linear operator that approximates the infinite-dimensional Koopman operator, introduced in the following section.
+\newpage
