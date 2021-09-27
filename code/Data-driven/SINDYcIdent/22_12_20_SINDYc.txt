@@ -1,0 +1,23 @@
+Observations
+
+Data trained on trajectories upto 20 degree for theta 1 and 10 degree for theta 2 could follow upto 
+
+
+What happens when there is low data? 
+It does not fit well, we need more training data
+
+Plot comparison of data obtained from different initial conditions against data obtained from one trajectory
+
+Training data is a chirp signal with a minimum frequency of 0.5Hz and a maximum frequency of 0.7Hz and an amplitude of 0.1. Or you can write the training signal is a forcing function of the form .... with A = ,f1 = ,f2 = 
+
+This was so selected such that the system does not enter into unpredictable chaotic behaviour which happens when the pendulum goes around the arm. And then the prediction becomes messy. The solvers were not able to converge. Maybe more data of such scenarious could help. 
+
+The validation data was the same forcing function but with different amplitude and freq. Give the values. 
+
+As we can see, when the data consists of only one trajectory, the approximation with the same number of observables was not equivalent to the one with data from multiple trajectories. Therefore, data taken from multiple trajectories always gives more information. While this is true for complex systems, systems with simple dynamical interactions like van der pol oscillator works with data from only one trajectory. This is sufficient. 
+
+Also, if we select mroe observables like in example 2 to fit the trajectory better lets say, we can see that the data from single trajectory actually gives a very bad approximation. The values just blow up and there is a reason for this. When we use data from only a single trajectory and give more observables for it fit, it might end up selecting the wrong observable, and when it tries to approximate the trajectory with a wrong observable the system naturally blows up. 
+
+
+
+Ok!! So the tracking partially works with the chosen observables. BUT since we are eliminating theta1 as one of the observables, we can not track the other side. Maybe we should include a theta1*sin term and see how it behaves. 
